@@ -1,24 +1,36 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerController : MonoBehaviour {
+public class CharacterController : MonoBehaviour
+{
 
-	public float speed;
+	public float maxSpeed = 10f;
+	bool facingRight = true;
 
-	private Rigidbody rb;
+	Animator anim;
 
-	void Start ()
+	void Start()
 	{
-		rb = GetComponent<Rigidbody>();
+		anim = GetComponent<Animator>();
 	}
 
-	void FixedUpdate ()
+	void FixedUpdate()
 	{
-		float moveHorizontal = Input.GetAxis ("Horizontal");
-		float moveVertical = Input.GetAxis ("Vertical");
+		float move = Input.GetAxis("Horizontal");
+		anim.SetFloat("Speed", Mathf.Abs(move));
 
-		Vector3 movement = new Vector3 (moveHorizontal, 0.0f, moveVertical);
+		GetComponent<Rigidbody2D>().velocity = new Vector2(move * maxSpeed, GetComponent<Rigidbody2D>().velocity.y);
 
-		rb.AddForce (movement * speed);
+		if (move > 0 && !facingRight)
+			Flip();
+		else if (move < 0 && facingRight)
+			Flip();
+	}
+	void Flip()
+	{
+		facingRight = !facingRight;
+		Vector3 theScale = transform.localScale;
+		theScale.x *= -1;
+		transform.localScale = theScale;
 	}
 }
